@@ -8,6 +8,7 @@
 	<packaging>jar</packaging>
 	<description>renren-fast</description>
 
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
