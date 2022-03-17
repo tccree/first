@@ -43,7 +43,7 @@ spring:
 
 #mybatis
 mybatis-plus:
-#  mapper-locations: classpath*:/mapper/**/*.xml  #使用mybatisplus，尽量不采用该低效率的开发
+  mapper-locations: classpath*:/mapper/**/*.xml
   #实体扫描，多个package用逗号或者分号分隔
   typeAliasesPackage: mollie.basic.modules.*.entity
   global-config:
