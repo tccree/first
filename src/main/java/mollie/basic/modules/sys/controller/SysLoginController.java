@@ -6,9 +6,11 @@ import mollie.basic.common.utils.R;
 import mollie.basic.modules.sys.entity.SysUserEntity;
 import mollie.basic.modules.sys.form.SysLoginForm;
 import mollie.basic.modules.sys.service.SysCaptchaService;
+import mollie.basic.modules.sys.service.SysUserRoleService;
 import mollie.basic.modules.sys.service.SysUserService;
 import mollie.basic.modules.sys.service.SysUserTokenService;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +41,8 @@ public class SysLoginController extends AbstractController {
 	private SysUserTokenService sysUserTokenService;
 	@Autowired
 	private SysCaptchaService sysCaptchaService;
+	@Autowired
+	private SysUserRoleService sysUserRoleService;
 
 	/**
 	 * 验证码
@@ -79,6 +86,34 @@ public class SysLoginController extends AbstractController {
 		//生成token，并保存到数据库
 		R r = sysUserTokenService.createToken(user.getUserId());
 		return r;
+	}
+
+	/**
+	 * 保存用户
+	 */
+	@PostMapping("/sys/register")
+	public R register(@RequestBody SysLoginForm form){
+		boolean captcha = sysCaptchaService.validate(form.getUuid(), form.getCaptcha());
+		if(!captcha){
+			return R.error("验证码不正确");
+		}
+		SysUserEntity user = new SysUserEntity();
+		user.setUsername(form.getUsername());
+		user.setPassword(form.getPassword());
+		user.setCreateTime(new Date());
+		//sha256加密
+		String salt = RandomStringUtils.randomAlphanumeric(20);
+		user.setPassword(new Sha256Hash(user.getPassword(), salt).toHex());
+		user.setSalt(salt);
+		user.setStatus(1);
+		sysUserService.save(user);
+
+		List<Long> roleIds = new ArrayList<>();
+		roleIds.add(1L);
+
+		//保存用户与角色关系
+		sysUserRoleService.saveOrUpdate(user.getUserId(), roleIds);
+		return R.ok();
 	}
 
 
