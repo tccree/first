@@ -3,6 +3,10 @@ package mollie.basic.common.utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -24,26 +28,34 @@ public class FileUtil {
         file.transferTo(dest);
     }
 
-    public static final String SAVE_PATH = "D:/mollie-file";
+    public static String getCmd() {
+        return System.getProperty("user.dir");
+    }
 
-    public static String uploadImg(MultipartFile multipartFile)throws Exception{
-        String filename = "";
-        //生成uuid作为文件名
-        String uuid = UUID.randomUUID().toString().replace("-","");
-        //获取文件类型
-        String contentType = multipartFile.getContentType();
-        //获取文件后缀名
-        String suffixName = contentType.substring(contentType.indexOf("/")+1);
-        //生成新的文件名
-        filename = uuid+"."+suffixName;
+    public static String getFileExt(String filename) {
+        int index = filename.lastIndexOf('.');
+        return filename.substring(index);
+    }
 
-        File dest = new File(SAVE_PATH,filename);
+    public static String getStorePath(String storeDir, String newFilename) {
+        Date now = new Date();
+        String format = new SimpleDateFormat("yyyy/MM").format(now);
+        Path path = Paths.get(storeDir, format).toAbsolutePath();
+        File file = new File(path.toString());
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return Paths.get(format, newFilename).toString();
+    }
+
+    public static void uploadFile(String path,MultipartFile multipartFile) throws Exception{
+
+        File dest = new File(path);
         //保存文件到路径
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
         multipartFile.transferTo(dest);
-        return filename;
     }
 
 }

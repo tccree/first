@@ -1,5 +1,6 @@
 # Tomcat
 server:
+  host: localhost:8080
   tomcat:
     uri-encoding: UTF-8
     max-threads: 1000
@@ -8,7 +9,8 @@ server:
   connection-timeout: 5000ms
   servlet:
     context-path: /mollie-basic
-
+project:
+  path: /mollie_file/
 spring:
   # 环境 dev|test|prod
   profiles:
