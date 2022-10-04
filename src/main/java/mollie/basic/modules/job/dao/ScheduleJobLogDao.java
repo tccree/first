@@ -6,18 +6,18 @@
  * 版权所有，侵权必究！
  */
 
-package mollie.basic.modules.oss.dao;
+package mollie.basic.modules.job.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import mollie.basic.modules.oss.entity.SysOssEntity;
+import mollie.basic.modules.job.entity.ScheduleJobLogEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 文件上传
+ * 定时任务日志
  *
  * @author Mark sunlightcs@gmail.com
  */
 @Mapper
-public interface SysOssDao extends BaseMapper<SysOssEntity> {
-
+public interface ScheduleJobLogDao extends BaseMapper<ScheduleJobLogEntity> {
+	
 }
