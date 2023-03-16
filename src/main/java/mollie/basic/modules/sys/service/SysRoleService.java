@@ -30,4 +30,14 @@ public interface SysRoleService extends IService<SysRoleEntity> {
 	 * 查询用户创建的角色ID列表
 	 */
 	List<Long> queryRoleIdList(Long createUserId);
+    
+    
+    /**
+     * 根据用户角色id获取用户角色名称
+     * @param userId
+     * @return
+     */
+    String queryRoleNameByUserId(Long userId);
+    
+ 
 }

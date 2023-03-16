@@ -27,4 +27,11 @@ public interface SysUserRoleService extends IService<SysUserRoleEntity> {
 	 * 根据角色ID数组，批量删除
 	 */
 	int deleteBatch(Long[] roleIds);
+    
+    /**
+     * 查询用户角色
+     * @param id
+     * @return
+     */
+    Long getUserPermission(Long id);
 }

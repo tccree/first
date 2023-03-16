@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mollie.basic.modules.paper.dao.PaperModelDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="mollie.basic.modules.paper.entity.PaperModelEntity" id="paperModelMap">
+        <result property="id" column="id"/>
+	    <result property="paperTitle" column="paper_title"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="paperDesc" column="paper_desc"/>
+        <result property="paperLevel" column="paper_level"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+	<insert id="savePaper">
+		insert into paper_exam_pool (paper_model_id, exam_pool_id)
+		values (#{paperId}, #{examId})
+	</insert>
+	<update id="setScoreLevel">
+		update paper_model set total_score = #{totalScore}, paper_level = #{totalLevel}
+		where id = #{id}
+	</update>
+	<!--删除试卷中的试题-->
+	<delete id="delExamPaper">
+		delete from paper_exam_pool where paper_model_id = #{paperId} and exam_pool_id = #{examId}
+	</delete>
+	<!--获取已经添加到试卷的试题-->
+	<select id="paperExam" resultType="mollie.basic.modules.exam.entity.ExamPoolEntity">
+		SELECT * FROM
+			exam_pool
+		WHERE id IN (
+			SELECT exam_pool_id
+			FROM paper_exam_pool
+			WHERE paper_model_id = #{id})
+	</select>
+	<!--获取没有添加到试卷的试题-->
+	<select id="paperNoExam" resultType="mollie.basic.modules.exam.entity.ExamPoolEntity">
+		SELECT * FROM
+			exam_pool
+		WHERE id NOT IN (
+			SELECT exam_pool_id
+			FROM paper_exam_pool
+			WHERE paper_model_id = #{id})
+	</select>
+</mapper>

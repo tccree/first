@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import mollie.basic.common.validator.group.AddGroup;
 import mollie.basic.common.validator.group.UpdateGroup;
 import lombok.Data;
+import mollie.basic.modules.classroom.entity.ClassVo;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 系统用户
@@ -90,5 +92,23 @@ public class SysUserEntity implements Serializable {
 	 * 性别
 	 */
 	private String sex;
+    
+    /**
+     * 角色名称
+     */
+    @TableField(exist = false)
+    private String roleName;
+    
+    /**
+     * 班级名称
+     */
+    @TableField(exist = false)
+    private List<ClassVo> className;
+    
+    /**
+     * 班级id
+     */
+    @TableField(exist = false)
+    private Long classId;
 
 }

@@ -21,4 +21,16 @@
 		select * from sys_user where username = #{username}
 	</select>
 
+	<!--查询所有的教师-->
+	<select id="queryAllTeacher" resultType="mollie.basic.modules.sys.entity.TeachersVo">
+		select user_id, username
+		from sys_user
+		where user_id in (SELECT user_id FROM sys_user_role WHERE role_id = 3)
+	</select>
+
+	<select id="queryTeacherName" resultType="java.lang.String">
+		select username from sys_user where user_id = #{userId}
+	</select>
+
+
 </mapper>

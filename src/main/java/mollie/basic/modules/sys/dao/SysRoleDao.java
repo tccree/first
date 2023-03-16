@@ -20,4 +20,11 @@ public interface SysRoleDao extends BaseMapper<SysRoleEntity> {
 	 * 查询用户创建的角色ID列表
 	 */
 	List<Long> queryRoleIdList(Long createUserId);
+    
+    /**
+     * 通过用户id获取用户角色名称
+     * @param userId
+     * @return
+     */
+    String queryRoleNameByUserId(Long userId);
 }

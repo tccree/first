@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mollie.basic.modules.check.dao.ExamCheckoutDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="mollie.basic.modules.check.entity.ExamCheckoutEntity" id="examCheckoutMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="picture" column="picture"/>
+        <result property="checkoutDec" column="checkout_dec"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="totalLevel" column="total_level"/>
+        <result property="isState" column="is_state"/>
+        <result property="classId" column="class_id"/>
+        <result property="className" column="class_name"/>
+        <result property="checkoutTime" column="checkout_time"/>
+    </resultMap>
+	<!--将试题保存到试卷中-->
+	<insert id="saveCheck">
+		insert into checkout_exam_pool (checkout_id, exam_id)
+		values (#{checkId}, #{examId})
+	</insert>
+	<update id="setScoreLevel">
+		update exam_checkout set total_score = #{totalScore}, total_level = #{totalLevel}
+		where id = #{id}
+	</update>
+	<delete id="delCheck">
+		delete from checkout_exam_pool
+		where checkout_id = #{checkId} and exam_id = #{examId}
+	</delete>
+	<!--获取已经添加到试卷中的试题-->
+	<select id="checkExam" resultType="mollie.basic.modules.exam.entity.ExamPoolEntity">
+		SELECT * FROM
+			exam_pool
+		WHERE id IN (
+			SELECT exam_id
+			FROM checkout_exam_pool
+			WHERE checkout_id = #{id})
+	</select>
+
+	<select id="noCheckExam" resultType="mollie.basic.modules.exam.entity.ExamPoolEntity">
+		SELECT * FROM
+			exam_pool
+		WHERE id NOT IN(SELECT DISTINCT exam_id FROM
+			checkout_exam_pool
+		                WHERE checkout_id = #{id})
+	</select>
+
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mollie.basic.modules.classroom.dao.ClassDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="mollie.basic.modules.classroom.entity.ClassEntity" id="classMap">
+        <result property="classId" column="class_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="className" column="class_name"/>
+        <result property="classPicture" column="class_picture"/>
+    </resultMap>
+	<!--保存用户和班级之间的关系-->
+	<insert id="saveClassUser">
+		insert into class_user (class_id, user_id) values (#{classId}, #{userId})
+	</insert>
+	<!--更新学生班级-->
+	<update id="updateClassUser">
+		update class_user set class_id = #{classId} where user_id = #{userId}
+	</update>
+	<!--删除学生和班级-->
+	<delete id="deleteClassUser">
+		delete from class_user where user_id = #{userId}
+	</delete>
+	<!--获取全部班级名称-->
+	<select id="queryAllClassName" resultType="mollie.basic.modules.classroom.entity.ClassVo">
+		select class_id classId, class_name className from class
+	</select>
+	<!--获取学生所属班级id-->
+	<select id="queryClassIdByUserId" resultType="java.lang.Long">
+		select class_id from class_user where user_id = #{userId}
+	</select>
+	<!--查询班级里所有的学生姓名-->
+	<select id="queryStudentsName" resultType="java.lang.String">
+		SELECT b.username
+		FROM class_user a
+		LEFT JOIN sys_user b
+		ON a.user_id = b.user_id
+		WHERE a.class_id = #{classId}
+	</select>
+
+
+</mapper>

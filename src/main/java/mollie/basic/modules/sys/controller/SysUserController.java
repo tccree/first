@@ -10,7 +10,10 @@ import mollie.basic.common.validator.Assert;
 import mollie.basic.common.validator.ValidatorUtils;
 import mollie.basic.common.validator.group.AddGroup;
 import mollie.basic.common.validator.group.UpdateGroup;
+import mollie.basic.modules.classroom.entity.ClassVo;
+import mollie.basic.modules.classroom.service.ClassService;
 import mollie.basic.modules.sys.entity.SysUserEntity;
+import mollie.basic.modules.sys.entity.TeachersVo;
 import mollie.basic.modules.sys.form.PasswordForm;
 import mollie.basic.modules.sys.service.SysUserRoleService;
 import mollie.basic.modules.sys.service.SysUserService;
@@ -35,6 +38,8 @@ public class SysUserController extends AbstractController {
 	private SysUserService sysUserService;
 	@Autowired
 	private SysUserRoleService sysUserRoleService;
+    @Autowired
+    private ClassService classService;
 
 
 	/**
@@ -51,6 +56,21 @@ public class SysUserController extends AbstractController {
 
 		return R.ok().put("page", page);
 	}
+    
+    @GetMapping("/teachers")
+    public R teachers() {
+        
+        List<TeachersVo> teachersVos = sysUserService.queryAllTeacher();
+        
+        return R.ok().put("teachers", teachersVos);
+    }
+    
+    @RequestMapping("/permission/{id}")
+    public R userPermission(@PathVariable("id") Long id) {
+        Long permission = sysUserRoleService.getUserPermission(id);
+        
+        return R.ok().put("permission", permission);
+    }
 	
 	/**
 	 * 获取登录的用户信息
@@ -86,15 +106,21 @@ public class SysUserController extends AbstractController {
 	 * 用户信息
 	 */
 	@GetMapping("/info/{userId}")
-	@RequiresPermissions("sys:user:info")
+	//@RequiresPermissions("sys:user:info")
 	public R info(@PathVariable("userId") Long userId){
 		SysUserEntity user = sysUserService.getById(userId);
 		
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(userId);
 		user.setRoleIdList(roleIdList);
-		
-		return R.ok().put("user", user);
+        //获取全部班级信息
+        List<ClassVo> clazzName = classService.clazzName();
+        user.setClassName(clazzName);
+        //如果为学生，查找学生的班级id
+        Long classId = classService.queryClassIdByUserId(user);
+        user.setClassId(classId);
+        
+        return R.ok().put("user", user);
 	}
 	
 	/**
@@ -109,6 +135,9 @@ public class SysUserController extends AbstractController {
 		user.setCreateUserId(getUserId());
 		sysUserService.saveUser(user);
 		
+        //保存班级用户表
+        classService.saveClassUser(user);
+  
 		return R.ok();
 	}
 	
@@ -123,6 +152,8 @@ public class SysUserController extends AbstractController {
 
 		user.setCreateUserId(getUserId());
 		sysUserService.update(user);
+        //更新班级用户表
+        classService.updateClassUser(user);
 		
 		return R.ok();
 	}

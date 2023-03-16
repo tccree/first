@@ -2,11 +2,13 @@
 
 package mollie.basic.modules.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import mollie.basic.common.utils.MapUtils;
 import mollie.basic.modules.sys.dao.SysUserRoleDao;
 import mollie.basic.modules.sys.entity.SysUserRoleEntity;
 import mollie.basic.modules.sys.service.SysUserRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,9 @@ import java.util.List;
  */
 @Service("sysUserRoleService")
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao, SysUserRoleEntity> implements SysUserRoleService {
+ 
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
 
 	@Override
 	public void saveOrUpdate(Long userId, List<Long> roleIdList) {
@@ -49,4 +54,13 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao, SysUserR
 	public int deleteBatch(Long[] roleIds){
 		return baseMapper.deleteBatch(roleIds);
 	}
+    
+    @Override
+    public Long getUserPermission(Long id) {
+        SysUserRoleEntity sysUserRoleEntity = sysUserRoleDao.selectOne(new LambdaQueryWrapper<SysUserRoleEntity>()
+                .eq(SysUserRoleEntity::getUserId, id));
+        return sysUserRoleEntity.getRoleId();
+    }
+    
+    
 }

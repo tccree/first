@@ -2,6 +2,7 @@
 
 package mollie.basic.modules.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,8 +10,10 @@ import mollie.basic.common.exception.RRException;
 import mollie.basic.common.utils.Constant;
 import mollie.basic.common.utils.PageUtils;
 import mollie.basic.common.utils.Query;
+import mollie.basic.modules.classroom.service.ClassService;
 import mollie.basic.modules.sys.dao.SysUserDao;
 import mollie.basic.modules.sys.entity.SysUserEntity;
+import mollie.basic.modules.sys.entity.TeachersVo;
 import mollie.basic.modules.sys.service.SysRoleService;
 import mollie.basic.modules.sys.service.SysUserRoleService;
 import mollie.basic.modules.sys.service.SysUserService;
@@ -38,6 +41,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 	private SysUserRoleService sysUserRoleService;
 	@Autowired
 	private SysRoleService sysRoleService;
+    @Autowired
+    private ClassService classService;
+ 
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params) {
@@ -49,9 +55,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 			new QueryWrapper<SysUserEntity>()
 				.like(StringUtils.isNotBlank(username),"username", username)
 				.eq(createUserId != null,"create_user_id", createUserId)
+    
 		);
-
-		return new PageUtils(page);
+        
+        List<SysUserEntity> sysUserEntities = page.getRecords();
+        sysUserEntities.forEach(sysUserEntity -> {
+            String roleName = sysRoleService.queryRoleNameByUserId(sysUserEntity.getUserId());
+            sysUserEntity.setRoleName(roleName);
+        });
+        page.setRecords(sysUserEntities);
+        return new PageUtils(page);
 	}
 
 	@Override
@@ -106,6 +119,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 	@Override
 	public void deleteBatch(Long[] userId) {
 		this.removeByIds(Arrays.asList(userId));
+        Arrays.asList(userId).forEach(v -> {
+            classService.deleteClassUser(v);
+        });
+        
 	}
 
 	@Override
@@ -115,8 +132,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		return this.update(userEntity,
 				new QueryWrapper<SysUserEntity>().eq("user_id", userId).eq("password", password));
 	}
-	
-	/**
+    
+    @Override
+    public List<TeachersVo> queryAllTeacher() {
+        
+        return this.baseMapper.queryAllTeacher();
+    }
+    
+    @Override
+    public String queryTeacherName(Long userId) {
+        return this.baseMapper.queryTeacherName(userId);
+    }
+    
+    
+    /**
 	 * 检查角色是否越权
 	 */
 	private void checkRole(SysUserEntity user){

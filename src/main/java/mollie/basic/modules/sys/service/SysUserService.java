@@ -2,9 +2,15 @@
 
 package mollie.basic.modules.sys.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.service.IService;
 import mollie.basic.common.utils.PageUtils;
 import mollie.basic.modules.sys.entity.SysUserEntity;
+import mollie.basic.modules.sys.entity.TeachersVo;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -57,4 +63,18 @@ public interface SysUserService extends IService<SysUserEntity> {
 	 * @param newPassword  新密码
 	 */
 	boolean updatePassword(Long userId, String password, String newPassword);
+    
+    /**
+     * 获取所有的教师
+     * @return
+     */
+    List<TeachersVo> queryAllTeacher();
+    
+    /**
+     * 根据教师ID查询教师姓名
+     * @param userId
+     * @return
+     */
+    String queryTeacherName(Long userId);
+    
 }
