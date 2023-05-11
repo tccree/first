@@ -1,5 +1,6 @@
 package mollie.basic.modules.check.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -60,5 +61,8 @@ public class ExamCheckoutEntity implements Serializable {
 	 * 开考时间
 	 */
 	private Date checkoutTime;
+    
+    @TableField(exist = false)
+    private Long roleId;
 
 }

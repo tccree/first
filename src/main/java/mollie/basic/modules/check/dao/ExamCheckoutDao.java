@@ -54,4 +54,6 @@ public interface ExamCheckoutDao extends BaseMapper<ExamCheckoutEntity> {
      * @return
      */
     List<ExamPoolEntity> noCheckExam(Long id);
+    
+    Long selectClassId(Long userId);
 }

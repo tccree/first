@@ -44,6 +44,7 @@ public class UserSignServiceImpl extends ServiceImpl<UserSignDao, UserSignEntity
     public List<UserSignEntity> allSigns(Long userId) {
         List<UserSignEntity> userSignEntities = userSignDao.selectList(new LambdaQueryWrapper<UserSignEntity>()
                 .eq(UserSignEntity::getUserId, userId));
+
         userSignEntities.forEach(userSignEntity -> {
             Long checkId = userSignEntity.getCheckId();
             ExamCheckoutEntity examCheckoutEntity = examCheckoutDao.selectById(checkId);

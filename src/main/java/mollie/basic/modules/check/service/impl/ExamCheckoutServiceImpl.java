@@ -14,6 +14,8 @@ import mollie.basic.modules.exam.entity.UserSignEntity;
 import mollie.basic.modules.paper.dao.PaperModelDao;
 import mollie.basic.modules.sys.dao.SysUserDao;
 import mollie.basic.modules.sys.entity.SysUserEntity;
+import mollie.basic.modules.sys.service.SysRoleService;
+import mollie.basic.modules.sys.service.SysUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,12 +51,21 @@ public class ExamCheckoutServiceImpl extends ServiceImpl<ExamCheckoutDao, ExamCh
     private SysUserDao sysUserDao;
     @Autowired
     private UserExamDao userExamDao;
+    @Autowired
+    private SysRoleService sysRoleService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        Long userId = Long.valueOf((String) params.get("userId"));
+        Long classId = examCheckoutDao.selectClassId(userId);
+        Long roleId = sysRoleService.getRoleId(userId);
+        QueryWrapper<ExamCheckoutEntity> queryWrapper = new QueryWrapper<>();
+        if (roleId == 2) {
+            queryWrapper.eq("class_id", classId);
+        }
         IPage<ExamCheckoutEntity> page = this.page(
                 new Query<ExamCheckoutEntity>().getPage(params),
-                new QueryWrapper<ExamCheckoutEntity>()
+                queryWrapper
         );
         List<ExamCheckoutEntity> examCheckoutEntities = page.getRecords();
         examCheckoutEntities.forEach(examCheckoutEntity -> {
@@ -70,7 +81,9 @@ public class ExamCheckoutServiceImpl extends ServiceImpl<ExamCheckoutDao, ExamCh
             } else {
                 examCheckoutDao.setScoreLevel(id, 0, 1);
             }
+            examCheckoutEntity.setRoleId(roleId);
         });
+        
         return new PageUtils(page);
     }
     

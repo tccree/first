@@ -133,12 +133,14 @@ public class SysUserController extends AbstractController {
 		ValidatorUtils.validateEntity(user, AddGroup.class);
 		
 		user.setCreateUserId(getUserId());
-		sysUserService.saveUser(user);
+		boolean result = sysUserService.saveUser(user);
 		
         //保存班级用户表
         classService.saveClassUser(user);
-  
-		return R.ok();
+        if (result) {
+            return R.ok("添加成功");
+        }
+		return R.error("添加失败，邮箱或者手机号重复");
 	}
 	
 	/**

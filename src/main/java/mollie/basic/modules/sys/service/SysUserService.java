@@ -2,15 +2,10 @@
 
 package mollie.basic.modules.sys.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.service.IService;
 import mollie.basic.common.utils.PageUtils;
 import mollie.basic.modules.sys.entity.SysUserEntity;
 import mollie.basic.modules.sys.entity.TeachersVo;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -43,8 +38,9 @@ public interface SysUserService extends IService<SysUserEntity> {
 
 	/**
 	 * 保存用户
-	 */
-	void saveUser(SysUserEntity user);
+     * @return
+     */
+	boolean saveUser(SysUserEntity user);
 	
 	/**
 	 * 修改用户

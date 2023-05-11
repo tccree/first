@@ -77,8 +77,9 @@ public class ClassController {
     @RequestMapping("/save")
     @RequiresPermissions("classroom:class:save")
     public R save(@RequestBody ClassEntity clazz){
-		classService.saveClass(clazz);
-        return R.ok();
+		boolean result = classService.saveClass(clazz);
+        if (result) return R.ok("添加成功");
+        return R.error("添加失败");
     }
 
     /**

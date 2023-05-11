@@ -2,6 +2,7 @@
 
 package mollie.basic.modules.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import mollie.basic.common.utils.PageUtils;
 import mollie.basic.common.utils.Query;
 import mollie.basic.modules.sys.dao.SysRoleDao;
 import mollie.basic.modules.sys.entity.SysRoleEntity;
+import mollie.basic.modules.sys.entity.SysUserRoleEntity;
 import mollie.basic.modules.sys.service.SysRoleMenuService;
 import mollie.basic.modules.sys.service.SysRoleService;
 import mollie.basic.modules.sys.service.SysUserRoleService;
@@ -122,4 +124,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
 			throw new RRException("新增角色的权限，已超出你的权限范围");
 		}
 	}
+    
+    @Override
+    public Long getRoleId(Long userId) {
+        SysUserRoleEntity sysUserRoleEntity = sysUserRoleService.getOne(new LambdaQueryWrapper<SysUserRoleEntity>()
+                .eq(SysUserRoleEntity::getUserId, userId)
+        );
+        return sysUserRoleEntity.getRoleId();
+    }
 }

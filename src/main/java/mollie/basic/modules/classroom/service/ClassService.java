@@ -24,7 +24,7 @@ public interface ClassService extends IService<ClassEntity> {
      * 添加班级
      * @param clazz
      */
-    void saveClass(ClassEntity clazz);
+    boolean saveClass(ClassEntity clazz);
     
     /**
      * 获取全部班级名称

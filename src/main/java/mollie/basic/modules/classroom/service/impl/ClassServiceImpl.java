@@ -2,6 +2,7 @@ package mollie.basic.modules.classroom.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mchange.lang.LongUtils;
+import com.sun.tools.javac.code.Attribute;
 import mollie.basic.modules.classroom.entity.ClassVo;
 import mollie.basic.modules.sys.entity.SysUserEntity;
 import mollie.basic.modules.sys.service.SysUserService;
@@ -20,6 +21,7 @@ import mollie.basic.common.utils.Query;
 import mollie.basic.modules.classroom.dao.ClassDao;
 import mollie.basic.modules.classroom.entity.ClassEntity;
 import mollie.basic.modules.classroom.service.ClassService;
+import org.springframework.util.ObjectUtils;
 
 
 @Service("classService")
@@ -45,8 +47,15 @@ public class ClassServiceImpl extends ServiceImpl<ClassDao, ClassEntity> impleme
     }
     
     @Override
-    public void saveClass(ClassEntity clazz) {
+    public boolean saveClass(ClassEntity clazz) {
+        String className = clazz.getClassName();
+        ClassEntity classEntity = this.baseMapper.selectOne(new LambdaQueryWrapper<ClassEntity>()
+                .eq(ClassEntity::getClassName, className));
+        if (!ObjectUtils.isEmpty(classEntity)) {
+            return false;
+        }
         this.baseMapper.insert(clazz);
+        return true;
     }
     
     @Override

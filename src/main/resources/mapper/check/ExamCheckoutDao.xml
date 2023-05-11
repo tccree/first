@@ -47,5 +47,9 @@
 		                WHERE checkout_id = #{id})
 	</select>
 
+	<select id="selectClassId" resultType="java.lang.Long">
+		select class_id from class_user where user_id = #{userId}
+	</select>
+
 
 </mapper>

@@ -2,7 +2,7 @@
 
 package mollie.basic.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,6 +23,7 @@ import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -84,20 +85,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
 	@Override
 	@Transactional
-	public void saveUser(SysUserEntity user) {
-		user.setCreateTime(new Date());
-		//sha256加密
-		String salt = RandomStringUtils.randomAlphanumeric(20);
-		user.setPassword(new Sha256Hash(user.getPassword(), salt).toHex());
-		user.setSalt(salt);
-		this.save(user);
-		
-		//检查角色是否越权
-		checkRole(user);
-		
-		//保存用户与角色关系
-		sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
-	}
+	public boolean saveUser(SysUserEntity user) {
+        SysUserEntity sysUserEntity = this.baseMapper.selectOne(new LambdaQueryWrapper<SysUserEntity>()
+                .eq(SysUserEntity::getEmail, user.getEmail())
+                .or()
+                .eq(SysUserEntity::getMobile, user.getMobile())
+        );
+        if (ObjectUtils.isEmpty(sysUserEntity)) {
+            user.setCreateTime(new Date());
+            //sha256加密
+            String salt = RandomStringUtils.randomAlphanumeric(20);
+            user.setPassword(new Sha256Hash(user.getPassword(), salt).toHex());
+            user.setSalt(salt);
+            this.save(user);
+    
+            //检查角色是否越权
+            checkRole(user);
+    
+            //保存用户与角色关系
+            sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+            return true;
+        }
+        return false;
+    }
 
 	@Override
 	@Transactional
